@@ -16,6 +16,7 @@ class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleListSerializer
     permission_classes = (AllowAny, )
+    filterset_fields = ['created', 'title']
     search_fields = ['title', ]
     ordering = ['created', ]
 
@@ -84,10 +85,4 @@ class FavoriteArticleViewset(mixins.CreateModelMixin, mixins.ListModelMixin,  mi
                                }
 
         return serializers_actions[self.action]
-
-
-
-
-
-
 

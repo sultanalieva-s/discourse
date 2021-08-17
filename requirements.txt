@@ -5,3 +5,4 @@ djangorestframework==3.11
 python-decouple==3
 djangorestframework_simplejwt
 drf-yasg
+django-filter
