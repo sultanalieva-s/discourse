@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views as jwt_views
@@ -30,8 +33,23 @@ router.register('replies', ReplyViewSet)
 router.register('likes', ArticleLikeViewSet)
 router.register('favorites', FavoriteArticleViewset)
 
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Discourse API",
+      default_version='v1',
+      description="Discourse",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="saadatssu@gmail.com"),
+      license=openapi.License(name="MIT License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/docs/', schema_view.with_ui()),
     path('users/register/', RegisterView.as_view(), name='register'),
     path('users/activate/<str:activation_code>/', ActivationView.as_view(), name='activate'),
     # path('users/logout/', LogoutView.as_view(), name='logout'),
