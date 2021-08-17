@@ -57,10 +57,8 @@ class Reply(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
 
-
-
-
-
-
-
+class ArticleLike(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='likes')
+    is_active = models.BooleanField(default=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_likes', unique=True)
 

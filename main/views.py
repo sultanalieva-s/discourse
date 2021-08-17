@@ -1,12 +1,13 @@
 
 # Create your views here.
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from main.models import *
 from main.serializers import ArticleListSerializer, ArticlePostSerializer, ArticleDetailSerializer, \
     ArticleUpdateSerializer, ArticleCommentListSerializer, ReplyListSerializer, ArticleCommentPostSerializer, \
-    ReplyPostSerializer
+    ReplyPostSerializer, ArticleLikeSerializer
 
 
 # TODO: search, filter, pagination
@@ -36,9 +37,9 @@ class ArticleCommentViewSet(ModelViewSet):
     def get_serializer_class(self):
         serializers_actions = {'create': ArticleCommentPostSerializer,
                                 'list': ArticleCommentListSerializer,
-                                'retrieve':  ArticleDetailSerializer,
-                                'update': ArticleUpdateSerializer,
-                                'partial_update': ArticleUpdateSerializer,
+                                'retrieve':  ArticleCommentListSerializer,
+                                'update': ArticleCommentListSerializer,
+                                'partial_update': ArticleCommentListSerializer,
                                }
 
         return serializers_actions[self.action]
@@ -52,9 +53,19 @@ class ReplyViewSet(ModelViewSet):
     def get_serializer_class(self):
         serializers_actions = {'create': ReplyPostSerializer,
                                 'list': ReplyListSerializer,
-                                'retrieve':  ArticleDetailSerializer,
-                                'update': ArticleUpdateSerializer,
-                                'partial_update': ArticleUpdateSerializer,
+                                'retrieve':   ReplyListSerializer,
+                                'update':  ReplyListSerializer,
+                                'partial_update':  ReplyListSerializer,
                                }
 
         return serializers_actions[self.action]
+
+
+class ArticleLikeViewSet(ModelViewSet):
+    queryset = ArticleLike.objects.all()
+    serializer_class = ArticleLikeSerializer
+    permission_classes = (AllowAny,)
+
+
+
+

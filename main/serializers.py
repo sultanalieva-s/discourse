@@ -32,6 +32,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
                                                                         .filter(article=instance), many=True).data
         representation['author'] = UserSerializer(instance.author).data
         representation['image'] = ArticleImageSerializer(ArticleImage.objects.filter(article=instance).first()).data
+        representation['likes'] = ArticleLike.objects.filter(article=instance).count()
 
         return representation
 
@@ -51,6 +52,8 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
         representation['images'] = ArticleImageSerializer(ArticleImage.objects.filter(article=instance), many=True).data
 
         representation['comments'] = ArticleCommentListSerializer(ArticleComment.objects.filter(article=instance), many=True).data
+
+        representation['likes'] = ArticleLike.objects.filter(article=instance).count()
 
         return representation
 
@@ -196,4 +199,31 @@ class ReplyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = ('reply', 'author', 'author_name', 'author_lastname', 'created')
+
+
+class ArticleLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArticleLike
+        fields = ('article', 'is_active', )
+
+    def create(self, validated_data):
+        author = self.context.get('request').user
+        temporary = User.objects.first()
+
+        like = ArticleLike.objects.filter(author=temporary).first()
+
+        if like and like.is_active == True:
+            like.is_active = False
+            like.save()
+            return like
+
+        if like and like.is_active == False:
+            like.is_active = True
+            like.save()
+            return like
+
+        article = validated_data.pop('article')
+        like = ArticleLike.objects.create(is_active=True, author=temporary, article=article )
+        return like
+
 
