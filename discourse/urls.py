@@ -19,7 +19,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views as jwt_views
 
-from main.views import ArticleViewSet, ArticleCommentViewSet, ReplyViewSet, ArticleLikeViewSet
+from main.views import ArticleViewSet, ArticleCommentViewSet, ReplyViewSet, ArticleLikeViewSet, FavoriteArticleViewset
 from users.views import RegisterView, ActivationView, LoginView, LogoutView, UserViewSet
 
 router = DefaultRouter()
@@ -28,6 +28,7 @@ router.register('articles', ArticleViewSet)
 router.register('comments', ArticleCommentViewSet)
 router.register('replies', ReplyViewSet)
 router.register('likes', ArticleLikeViewSet)
+router.register('favorites', FavoriteArticleViewset)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

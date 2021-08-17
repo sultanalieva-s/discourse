@@ -3,8 +3,8 @@ from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
-from users.utils import send_activation_code
 
+from users.utils import send_activation_code
 User = get_user_model()
 
 
@@ -65,20 +65,3 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('name', 'lastname', 'avatar', )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

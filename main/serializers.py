@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from main.models import *
 from users.serializers import UserSerializer
+
 User = get_user_model()
 
 
@@ -150,7 +151,6 @@ class ArticleUpdateSerializer(serializers.ModelSerializer):
         return representation
 
 
-# TODO: add comments, replies
 class ArticleCommentPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArticleComment
@@ -227,3 +227,45 @@ class ArticleLikeSerializer(serializers.ModelSerializer):
         return like
 
 
+class FavoriteArticlePostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FavoriteArticle
+        fields = ('article', )
+
+    def create(self, validated_data):
+        user = self.context.get('request').user
+        temporary = User.objects.first()
+        print(temporary)
+        article = validated_data.pop('article')
+
+        favorite_exists = FavoriteArticle.objects.filter(user=temporary, article=article).first()
+
+        if favorite_exists:
+            raise serializers.ValidationError('The article is already in favorites')
+
+        favorite = FavoriteArticle.objects.create(user=temporary, article=article)
+        return favorite
+
+    def to_representation(self, instance):
+        r = super().to_representation(instance)
+        r['user'] = UserSerializer(instance.user).data
+        return r
+
+
+# TODO: how to list articles from favorite articles
+class FavoriteArticleListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FavoriteArticle
+        fields = ( 'user', 'id')
+
+    def to_representation(self, instance):
+        r = super().to_representation(instance)
+        favs = []
+        objs = FavoriteArticle.objects.all()
+        for i in objs:
+            favs.append(i.article)
+
+        r['user_favorites_all'] = ArticleListSerializer(favs, many=True).data
+        return r

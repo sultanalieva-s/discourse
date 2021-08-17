@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+
 from .serializers import *
 User = get_user_model()
 
@@ -41,11 +42,8 @@ class ActivationView(APIView):
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [AllowAny, ]
     serializer_class = UserSerializer
-
-# TODO: login - right now auth is None and user in AnonymousUser
-# errors that may occur: 403 forbidden, 401 unauthorized
 
 
 class LoginView(ObtainAuthToken):
@@ -59,7 +57,4 @@ class LogoutView(APIView):
         user = req.user
         Token.objects.filter(user=user).delete()
         return Response('Logged Out!', status=status.HTTP_200_OK)
-
-
-# TODO: TOKEN: base, sessions, token - json web tokens JWT??????
 
