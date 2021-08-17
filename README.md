@@ -8,12 +8,10 @@ A place for discussions.
 
 </div>
 
-## Doscourse Features
+## Discourse Features
 
-- [x] Handle standups and show warnings if standup is not complete
-- [x] Assign team members various roles
-- [x] Set deadlines for standups submissions in channels
-- [x] Set up individual timetables (schedules) for developers to submit standups
+- [x] To be updated...
+
 
 
 ### Run Discourse locally
