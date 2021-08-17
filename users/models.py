@@ -66,6 +66,7 @@ class CustomUser(AbstractUser):
     about = models.CharField(max_length=255)
 
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='users', null=True)
+    avatar = models.ImageField(upload_to='users/images')
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
