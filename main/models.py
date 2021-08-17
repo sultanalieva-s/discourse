@@ -64,8 +64,11 @@ class ArticleLike(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_likes', unique=True)
 
 
-# class Rate(models.Model):
-#     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='rates')
-#     rate = models.DecimalField(max_length=5.0)
+class Rate(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='rates')
+    rate = models.DecimalField(max_digits=3, decimal_places=2)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
 
 

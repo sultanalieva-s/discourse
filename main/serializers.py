@@ -35,6 +35,16 @@ class ArticleListSerializer(serializers.ModelSerializer):
         representation['image'] = ArticleImageSerializer(ArticleImage.objects.filter(article=instance).first()).data
         representation['likes'] = ArticleLike.objects.filter(article=instance).count()
 
+        sum = 0
+        rates = Rate.objects.filter(article=instance)
+        for i in rates:
+            sum = sum + i.rate
+
+        if Rate.objects.filter(article=instance).count() == 0:
+            representation['raiting'] = None
+        else:
+            representation['raiting'] = sum / Rate.objects.filter(article=instance).count()
+
         return representation
 
 
@@ -269,3 +279,26 @@ class FavoriteArticleListSerializer(serializers.ModelSerializer):
 
         r['user_favorites_all'] = ArticleListSerializer(favs, many=True).data
         return r
+
+
+class RateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Rate
+        fields = ('article', 'rate')
+
+    def create(self, validated_data):
+        # user = self.context.get('request').user
+        temporary = User.objects.first()
+        article = validated_data.get('article')
+
+        rate_exists = Rate.objects.filter(user=temporary, article=article).first()
+
+        if rate_exists:
+            raise serializers.ValidationError('One user can rate the article only once')
+
+        rate = Rate.objects.create(**validated_data)
+        return rate
+
+
+

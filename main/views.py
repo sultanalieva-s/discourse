@@ -1,14 +1,17 @@
 
 # Create your views here.
-from rest_framework import mixins
+from rest_framework import mixins, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from main.models import *
 from main.serializers import ArticleListSerializer, ArticlePostSerializer, ArticleDetailSerializer, \
     ArticleUpdateSerializer, ArticleCommentListSerializer, ReplyListSerializer, ArticleCommentPostSerializer, \
-    ReplyPostSerializer, ArticleLikeSerializer, FavoriteArticlePostSerializer, FavoriteArticleListSerializer
+    ReplyPostSerializer, ArticleLikeSerializer, FavoriteArticlePostSerializer, FavoriteArticleListSerializer, \
+    RateSerializer
 
 
 # TODO: search, filter, pagination
@@ -29,6 +32,13 @@ class ArticleViewSet(ModelViewSet):
                                }
 
         return serializers_actions[self.action]
+
+    @action(detail=True, methods=['post'])
+    def rate(self, req, pk=None):
+        serializer = RateSerializer(data=req.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ArticleCommentViewSet(ModelViewSet):
