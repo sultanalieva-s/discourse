@@ -300,5 +300,3 @@ class RateSerializer(serializers.ModelSerializer):
         rate = Rate.objects.create(**validated_data)
         return rate
 
-
-

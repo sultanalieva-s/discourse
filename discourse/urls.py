@@ -23,7 +23,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views as jwt_views
 
 from main.views import ArticleViewSet, ArticleCommentViewSet, ReplyViewSet, ArticleLikeViewSet, FavoriteArticleViewset
-from users.views import RegisterView, ActivationView, LoginView, LogoutView, UserViewSet
+from users.views import RegisterView, ActivationView, LoginView, LogoutView, UserViewSet, ForgotPasswordView, \
+    CompleteResetPassword
 
 router = DefaultRouter()
 router.register('users', UserViewSet)
@@ -57,5 +58,8 @@ urlpatterns = [
 
     path('users/login/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+
+    path('forgot_password/', ForgotPasswordView.as_view()),
+    path('forgot_password_complete/', CompleteResetPassword.as_view()),
 
 ]
