@@ -79,10 +79,9 @@ class ArticlePostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         req = self.context.get('request')
-        # author = req.user
+        author = req.user
 
         # TODO: remove when auth is complete
-        author = User.objects.first()
 
         categories = validated_data.pop('categories').split(',')
         images_data = req.FILES
@@ -122,7 +121,7 @@ class ArticleUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         request = self.context.get('request')
         # setting an authorized user:
-        author = User.objects.first()
+        author = request.user
 
         categories = validated_data.pop('categories').split(',')
 
@@ -169,8 +168,8 @@ class ArticleCommentPostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         req = self.context.get('request')
         user = req.user
-        temporary = User.objects.first()
-        comment = ArticleComment.objects.create(author=temporary, **validated_data)
+        # temporary = User.objects.first()
+        comment = ArticleComment.objects.create(author=user, **validated_data)
         return comment
 
 
@@ -198,7 +197,7 @@ class ReplyPostSerializer(serializers.ModelSerializer):
         req = self.context.get('request')
         user = req.user
         temporary = User.objects.first()
-        reply = Reply.objects.create(author=temporary, **validated_data)
+        reply = Reply.objects.create(author=user, **validated_data)
         return reply
 
 
@@ -218,9 +217,7 @@ class ArticleLikeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         author = self.context.get('request').user
-        temporary = User.objects.first()
-
-        like = ArticleLike.objects.filter(author=temporary).first()
+        like = ArticleLike.objects.filter(author=author).first()
 
         if like and like.is_active == True:
             like.is_active = False
@@ -233,7 +230,7 @@ class ArticleLikeSerializer(serializers.ModelSerializer):
             return like
 
         article = validated_data.pop('article')
-        like = ArticleLike.objects.create(is_active=True, author=temporary, article=article )
+        like = ArticleLike.objects.create(is_active=True, author=author, article=article )
         return like
 
 
@@ -249,12 +246,12 @@ class FavoriteArticlePostSerializer(serializers.ModelSerializer):
         print(temporary)
         article = validated_data.pop('article')
 
-        favorite_exists = FavoriteArticle.objects.filter(user=temporary, article=article).first()
+        favorite_exists = FavoriteArticle.objects.filter(user=user, article=article).first()
 
         if favorite_exists:
             raise serializers.ValidationError('The article is already in favorites')
 
-        favorite = FavoriteArticle.objects.create(user=temporary, article=article)
+        favorite = FavoriteArticle.objects.create(user=user, article=article)
         return favorite
 
     def to_representation(self, instance):
@@ -288,11 +285,11 @@ class RateSerializer(serializers.ModelSerializer):
         fields = ('article', 'rate')
 
     def create(self, validated_data):
-        # user = self.context.get('request').user
+        user = self.context.get('request').user
         temporary = User.objects.first()
         article = validated_data.get('article')
 
-        rate_exists = Rate.objects.filter(user=temporary, article=article).first()
+        rate_exists = Rate.objects.filter(user=user, article=article).first()
 
         if rate_exists:
             raise serializers.ValidationError('One user can rate the article only once')

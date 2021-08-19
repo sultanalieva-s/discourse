@@ -51,12 +51,13 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/docs/', schema_view.with_ui()),
+    path('users/login/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+
     path('users/register/', RegisterView.as_view(), name='register'),
     path('users/activate/<str:activation_code>/', ActivationView.as_view(), name='activate'),
     # path('users/logout/', LogoutView.as_view(), name='logout'),
     path('', include(router.urls)),
 
-    path('users/login/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
     path('forgot_password/', ForgotPasswordView.as_view()),

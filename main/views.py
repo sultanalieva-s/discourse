@@ -18,7 +18,7 @@ from main.serializers import ArticleListSerializer, ArticlePostSerializer, Artic
 class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleListSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
     filterset_fields = ['created', 'title']
     search_fields = ['title', ]
     ordering = ['created', ]
@@ -40,11 +40,39 @@ class ArticleViewSet(ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=False)
+    def get_recommendations(self, req):
+        user = req.user
+        likes = ArticleLike.objects.filter(author=user)
+        liked_articles = [i.article for i in likes]
+        categories = []
+
+        for i in liked_articles:
+            a = Article_ArticleCategory.objects.filter(article=i)
+            for k in a:
+                categories.append(k.article_category)
+
+        print(categories)
+
+        recommendations = []
+
+        for category in categories:
+            articles = Article_ArticleCategory.objects.filter(article_category=category)
+
+            for a in articles:
+                recommendations.append(a.article)
+
+        print(recommendations)
+        recommendations = set(recommendations)
+        recommendations = list(recommendations)
+        serializer = ArticleListSerializer(recommendations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class ArticleCommentViewSet(ModelViewSet):
     queryset = ArticleComment.objects.all()
     serializer_class = ArticleCommentListSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         serializers_actions = {'create': ArticleCommentPostSerializer,
@@ -60,7 +88,7 @@ class ArticleCommentViewSet(ModelViewSet):
 class ReplyViewSet(ModelViewSet):
     queryset = Reply.objects.all()
     serializer_class = ReplyListSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         serializers_actions = {'create': ReplyPostSerializer,
@@ -76,17 +104,18 @@ class ReplyViewSet(ModelViewSet):
 class ArticleLikeViewSet(ModelViewSet):
     queryset = ArticleLike.objects.all()
     serializer_class = ArticleLikeSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
 
 class FavoriteArticleViewset(mixins.CreateModelMixin, mixins.ListModelMixin,  mixins.DestroyModelMixin, GenericViewSet):
     queryset = FavoriteArticle.objects.all()
     serializer_class = FavoriteArticlePostSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         temporary = User.objects.first()
-        q = FavoriteArticle.objects.filter(user=temporary)
+        user = self.request.user
+        q = FavoriteArticle.objects.filter(user=user)
         return q
 
     def get_serializer_class(self):

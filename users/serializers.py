@@ -31,7 +31,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         user = User.objects.create_user(email=email, password=password, **validated_data)
 
-        send_activation_code(email=user.email, activation_code=user.activation_code)
+        send_activation_code(email=user.email, activation_code=user.activation_code, status='register')
 
         return user
 

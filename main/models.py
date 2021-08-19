@@ -61,14 +61,10 @@ class Reply(models.Model):
 class ArticleLike(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='likes')
     is_active = models.BooleanField(default=False)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_likes', unique=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_likes')
 
 
 class Rate(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='rates')
     rate = models.DecimalField(max_digits=3, decimal_places=2)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
-
-
