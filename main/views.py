@@ -1,10 +1,8 @@
-
 # Create your views here.
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from main.models import *
@@ -14,12 +12,11 @@ from main.serializers import ArticleListSerializer, ArticlePostSerializer, Artic
     RateSerializer
 
 
-# TODO: search, filter, pagination
 class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleListSerializer
     permission_classes = (IsAuthenticated, )
-    filterset_fields = ['created', 'title']
+    # filterset_fields = ['created', ]
     search_fields = ['title', ]
     ordering = ['created', ]
 
@@ -68,6 +65,20 @@ class ArticleViewSet(ModelViewSet):
         serializer = ArticleListSerializer(recommendations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def filter(self, req):
+        category = req.query_params.get('category')
+        cat_obj = ArticleCategory.objects.get(name=category)
+        q = Article_ArticleCategory.objects.filter(article_category=cat_obj)
+        articles = []
+
+        for a in q:
+            articles.append(a.article)
+
+        serializer = ArticleListSerializer(articles, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class ArticleCommentViewSet(ModelViewSet):
     queryset = ArticleComment.objects.all()
@@ -113,7 +124,6 @@ class FavoriteArticleViewset(mixins.CreateModelMixin, mixins.ListModelMixin,  mi
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        temporary = User.objects.first()
         user = self.request.user
         q = FavoriteArticle.objects.filter(user=user)
         return q
