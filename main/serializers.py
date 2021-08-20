@@ -33,7 +33,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
                                                                         .filter(article=instance), many=True).data
         representation['author'] = UserSerializer(instance.author).data
         representation['image'] = ArticleImageSerializer(ArticleImage.objects.filter(article=instance).first()).data
-        representation['likes'] = ArticleLike.objects.filter(article=instance).count()
+        representation['likes'] = ArticleLike.objects.filter(article=instance, is_active=True).count()
 
         sum = 0
         rates = Rate.objects.filter(article=instance)
@@ -64,7 +64,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
 
         representation['comments'] = ArticleCommentListSerializer(ArticleComment.objects.filter(article=instance), many=True).data
 
-        representation['likes'] = ArticleLike.objects.filter(article=instance).count()
+        representation['likes'] = ArticleLike.objects.filter(article=instance, is_active=True).count()
 
         return representation
 
@@ -282,11 +282,11 @@ class RateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rate
-        fields = ('article', 'rate')
+        fields = ('article', 'rate', 'user')
 
     def create(self, validated_data):
-        user = self.context.get('request').user
-        temporary = User.objects.first()
+        user = validated_data.pop('user')
+        # temporary = User.objects.first()
         article = validated_data.get('article')
 
         rate_exists = Rate.objects.filter(user=user, article=article).first()
@@ -294,6 +294,6 @@ class RateSerializer(serializers.ModelSerializer):
         if rate_exists:
             raise serializers.ValidationError('One user can rate the article only once')
 
-        rate = Rate.objects.create(**validated_data)
+        rate = Rate.objects.create(user=user, **validated_data)
         return rate
 

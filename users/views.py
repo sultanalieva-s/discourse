@@ -59,8 +59,6 @@ class LogoutView(APIView):
         return Response('Logged Out!', status=status.HTTP_200_OK)
 
 
-
-
 class ForgotPasswordView(APIView):
     def get(self, request):
         email = request.query_params.get('email')

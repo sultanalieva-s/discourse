@@ -1,8 +1,11 @@
 # Create your views here.
+# from rest_framework import filters
+from django.db.models import Q
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from main.models import *
@@ -17,7 +20,8 @@ class ArticleViewSet(ModelViewSet):
     serializer_class = ArticleListSerializer
     permission_classes = (IsAuthenticated, )
     # filterset_fields = ['created', ]
-    search_fields = ['title', ]
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = ['title', ]
     ordering = ['created', ]
 
     def get_serializer_class(self):
@@ -36,6 +40,7 @@ class ArticleViewSet(ModelViewSet):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
     @action(detail=False)
     def get_recommendations(self, req):
@@ -78,6 +83,16 @@ class ArticleViewSet(ModelViewSet):
         serializer = ArticleListSerializer(articles, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def search(self, request, pk=None):
+        q = request.query_params.get('q')
+        queryset = Article.objects.all()
+        queryset = queryset.filter(Q(title__icontains=q) |
+                                   Q(article__icontains=q))
+        serializers = ArticleListSerializer(queryset, many=True,
+                                    context={'request': request})
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 class ArticleCommentViewSet(ModelViewSet):
@@ -134,4 +149,9 @@ class FavoriteArticleViewset(mixins.CreateModelMixin, mixins.ListModelMixin,  mi
                                }
 
         return serializers_actions[self.action]
+
+
+
+
+
 

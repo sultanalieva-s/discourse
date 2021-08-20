@@ -51,6 +51,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/docs/', schema_view.with_ui()),
+    path('forgot_password/', ForgotPasswordView.as_view()),
+    path('forgot_password_complete/', CompleteResetPassword.as_view()),
     path('users/login/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
 
     path('users/register/', RegisterView.as_view(), name='register'),
@@ -60,7 +62,6 @@ urlpatterns = [
 
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
-    path('forgot_password/', ForgotPasswordView.as_view()),
-    path('forgot_password_complete/', CompleteResetPassword.as_view()),
+
 
 ]
