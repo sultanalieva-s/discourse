@@ -10,9 +10,16 @@ A place for discussions.
 
 ## Discourse Features
 
-- [x] To be updated...
-
-
+- [x]   CRUD operations
+- [x]   Filter, Search
+- [x]   Ability to add articles to favorites
+- [x]   Registration, Login
+- [x]   Password Reset
+- [x]   Comments
+- [x]   Ability to rate articles
+- [x]   Recommendation system which is based on previously liked articles by a user
+- [x]   Automated Deployment(planned)
+- [x]   Unit Tests Coverage(planned)
 
 ### Run Discourse locally
 
@@ -22,4 +29,4 @@ From project root directory run `docker-compose build`. Then run `docker-compose
 Go inside the container: `docker exec -it dicsourse bash`. Now that you are inside the container run the commands: `./manage.py makemigrations` and `./manage.py migrate`
 
 ## Testing
-to-do: add commands
+Go inside the container: docker exec -it discourse bash. Then, run the command: ./manage.py test
