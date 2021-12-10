@@ -1,5 +1,5 @@
 # discourse
-A place for discussions.
+A service for sharing and discussing articles.
 
 <br>
 <div align="center"> Service that allows users to discuss topics in academic way and write articles of various themes
